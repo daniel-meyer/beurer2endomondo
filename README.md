@@ -1,6 +1,6 @@
-# Beurer EasyFit to Endomondo Converter
-This project would be a Mac/Linux converter for the **Beurer EasyFit** (see
-[here](https://connect.beurer.com/Download/Common/Software.aspx)) that it allow to import data into Endomondo
+# Beurer EasyFit to Endomondo Converter (EFT to TCX Converter)
+This project would be a Mac/Linux converter for preparing the **Beurer EasyFit** (see
+[here](https://connect.beurer.com/Download/Common/Software.aspx)) export file (*.eft) to Endomondo import format (*.tcx)
 
 Author: Daniel Meyer
 
