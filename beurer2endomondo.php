@@ -63,6 +63,7 @@ $totalDistance = $trainingUhr['Strecke'] * 1000;
 
 $startAltitude = isset($argv[2]) ? floatval($argv[2]) : $uhrHoehe[0]['Hoehe'];
 $altitudeOffset = $startAltitude - $uhrHoehe[0]['Hoehe'];
+$startHR = $uhrHR[0]['HR'];
 echo 'Altitude offset: ' . $altitudeOffset . "\n";
 ob_start();
 echo '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>';
@@ -89,12 +90,27 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>';
                 </MaximumHeartRateBpm>
                 <Intensity>Active</Intensity>
                 <TriggerMethod>Manual</TriggerMethod>
-
+                <Trackpoint>
+                    <Time><?= $date->format('c'); ?></Time>
+                    <DistanceMeters>0</DistanceMeters>
+                    <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+                        <Value><?= $startHR ?></Value>
+                    </HeartRateBpm>
+                    <AltitudeMeters><?= $startAltitude ?></AltitudeMeters>
+                    <SensorState>Present</SensorState>
+                    <Extensions>
+                        <ActivityTrackpointExtension
+                            xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v1" SourceSensor="Footpod">
+                            <Speed>0</Speed>
+                        </ActivityTrackpointExtension>
+                    </Extensions>
+                </Trackpoint>
 <?php foreach ($uhrHR as $i => $rowHR):
     if (!array_key_exists('HR', $rowHR) || !isset($uhrHoehe[$i]['Hoehe']) || !isset($uhrSpeed[$i]['Speed']) ) continue;
     $rowSpeed = $uhrSpeed[$i]; $rowAlitude = $uhrHoehe[$i];
     $distance += $rowSpeed['Speed'] * 1000 / 60;
-    ?>
+    $date->modify('+1 minute');    
+?>
                 <Trackpoint>
                     <Time><?= $date->format('c') ?></Time>
                     <DistanceMeters><?= $distance > $totalDistance ? $totalDistance : $distance ?></DistanceMeters>
@@ -110,7 +126,7 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>';
                         </ActivityTrackpointExtension>
                     </Extensions>
                 </Trackpoint>
-<?php $date->modify('+1 minute'); endforeach; ?>
+<?php endforeach; ?>
 
                 <Extensions>
                     <ActivityLapExtension xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v1">
