@@ -44,6 +44,8 @@ $trainingUhr = current(parseCSV(mysystem('mdb-export -D \'%s\' ' . $argv[1] . ' 
 
 $date = DateTime::createFromFormat('U', $trainingUhr['Datum']);
 $date->setTimezone(new DateTimeZone('Europe/Warsaw'));
+$endDate = clone $date;
+$endDate->modify('+' . $trainingUhr['Dauer'] . ' seconds');
 //var_dump($trainingUhr);
 
 echo 'Preparing activity: ' . $trainingUhr['Kommentar'] . "\n";
@@ -94,7 +96,7 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>';
                     <Time><?= $date->format('c'); ?></Time>
                     <DistanceMeters>0</DistanceMeters>
                     <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
-                        <Value><?= $startHR ?></Value>
+                        <Value><?= floor($startHR - ($startHR * 0.1)) ?></Value>
                     </HeartRateBpm>
                     <AltitudeMeters><?= $startAltitude ?></AltitudeMeters>
                     <SensorState>Present</SensorState>
@@ -112,7 +114,7 @@ echo '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>';
     $date->modify('+1 minute');    
 ?>
                 <Trackpoint>
-                    <Time><?= $date->format('c') ?></Time>
+                    <Time><?= $date > $endDate ? $endDate->format('c') : $date->format('c') ?></Time>
                     <DistanceMeters><?= $distance > $totalDistance ? $totalDistance : $distance ?></DistanceMeters>
                     <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                         <Value><?= $rowHR['HR'] ?></Value>
